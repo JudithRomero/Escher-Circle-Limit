@@ -13,11 +13,13 @@ Example of the Poincare disk:
 'python cli.py --poincare --layers 2 -o tesselation.png -p 5 -q 6 --size 400'
 
 
+
 ![alt text](./tesselation.png)
 
 Example of the image tiling:
 
 'python cli.py --color #ff0000 --layers 2 -o tesselation2.png -p 5 -q 6 -e fish2.png --size 400'
+
 
 
 ![alt text](./tesselation2.png)
