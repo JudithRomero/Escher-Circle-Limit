@@ -37,7 +37,7 @@ class Args:
     if (p - 2) * (q - 2) <= 4:
       print('(p-2)(q-2) must be > 4')
       return None
-    for edge in parsed.edge:
+    for edge in parsed.edge or []:
       try:
         image = load_image(edge)
         if not fst_image:
