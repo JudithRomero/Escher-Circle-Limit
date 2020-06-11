@@ -19,7 +19,7 @@ class Args:
     parser = ArgumentParser()
     parser.add_argument('--output', '-o', help='output image filename, i.e "tesselation.png"', required=True)
     parser.add_argument('--color', help='face color, i.e "#3d3d3d"; if none given random color will be used')
-    parser.add_argument('--poincare', help='draw poincare model instead of kleine', action='store_true')
+    parser.add_argument('--poincare', help='draw poincare model instead of klein', action='store_true')
     parser.add_argument('--layers', type=int, help='algorithm recursion depth, default: 4', default=4)
     parser.add_argument('--size', type=int, help='output image width and height, default: 800px', default=800)
     parser.add_argument('--edge', '-e', nargs='*', help='image filename, that will be used randomly on edges', required=True)
