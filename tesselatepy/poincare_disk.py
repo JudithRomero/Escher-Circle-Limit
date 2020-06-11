@@ -8,12 +8,8 @@ from point import Point
 Color = str
 
 class DiskParams:
-  def __init__(self, n: int, k: int, layers: int, size: int):
+  def __init__(self, n: int, k: int, layers: int, size: int, colors: List[Color]):
     self.n = n
-    if n == 3: assert(k >= 7)
-    elif n == 4: assert(k >= 5)
-    elif n in [5, 6]: assert(k >= 6)
-    elif n >= 7: assert(k >= 3)
     self.k = k
     # algorithm depth
     # suggested max: 4
@@ -21,6 +17,13 @@ class DiskParams:
     # image size
     self.width = size
     self.height = size
+    self.colors = colors or flatcolors
+    self._color_index = choice(range(len(self.colors)))
+
+  def random_color(self) -> Color:
+    result = self.colors[self._color_index]
+    self._color_index = (self._color_index + 1) % len(self.colors)
+    return result
 
 class PoincareDisk:
   def __init__(self, n: int, polys: List[Polygon], rule: List[int], total: int, inner: int, colors: List[Color]):
@@ -69,7 +72,7 @@ def determine_polys(inner: int, total: int, params: DiskParams) -> PoincareDisk:
   rule = [0] * total
   colors = [""] * total
   polys[0] = construct_center_polygon(params.n, params.k, False)
-  colors[0] = random_color()
+  colors[0] = params.random_color()
   # index of the next polygon to create
   j = 1
   for i in range(inner):
@@ -78,7 +81,6 @@ def determine_polys(inner: int, total: int, params: DiskParams) -> PoincareDisk:
 
 def apply_rule(i: int, j: int, rule: List[int], params: DiskParams, polys: List[Polygon], colors: List[Color]) -> int:
   is_alternating = params.k % 2 == 0
-  is_alternating = False
   r = rule[i]
   special = r == 1
   if special: r = 2
@@ -91,7 +93,7 @@ def apply_rule(i: int, j: int, rule: List[int], params: DiskParams, polys: List[
     if is_alternating and j > 1:
       colors[j] = colors[1] if colors[i] == colors[0] else colors[0]
     else:
-      colors[j] = random_color()
+      colors[j] = params.random_color()
     j += 1
     m = 0
     if special: m = 2
@@ -103,7 +105,7 @@ def apply_rule(i: int, j: int, rule: List[int], params: DiskParams, polys: List[
       if is_alternating:
         colors[j] = colors[1] if colors[j - 1] == colors[0] else colors[0]
       else:
-        colors[j] = random_color()
+        colors[j] = params.random_color()
       j += 1
   return j
 

@@ -1,4 +1,4 @@
-from poincare_disk import PoincareDisk, DiskParams, random_color
+from poincare_disk import PoincareDisk, DiskParams
 from polygon import get_scl, Polygon, get_lines
 from point import Point
 from PIL import Image
@@ -59,19 +59,19 @@ def monochrome(image: Image) -> Image:
   r2, g2, b2 = image.convert('1').convert('RGB').split()
   return Image.merge('RGBA', (r2, g2, b2, a))
 
-def show_kleine_fishes(polys: List[Polygon], size: int, fishes: List['Image'], fname: str, face_color: Optional[str]):
+def show_kleine_fishes(disk: PoincareDisk, size: int, fishes: List['Image'], fname: str):
   hs = size // 2
   offset = Point(Decimal(hs), Decimal(hs))
   im = Image.new('RGBA', (size, size))
   fish = fishes[0]
   fish_aspect = Decimal(fish.size[0] / fish.size[1])
   draw = ImageDraw.Draw(im)
-  for poly in polys:
+  for poly, color in zip(disk.polys, disk.colors):
     pts = [p.times(Decimal(hs)).plusc(offset) for p in poly]
     pil_pts = [(pt.x, pt.y) for pt in pts]
-    draw.polygon(pil_pts, fill=face_color or random_color())
+    draw.polygon(pil_pts, fill=color)
   print('getting unique lines...')
-  lines = get_unique_lines(polys)
+  lines = get_unique_lines(disk.polys)
   lines.sort(key=lambda a: a[0].minusc(a[1]).norm_squared())
   print('sorting...')
   for i, line in enumerate(lines):
@@ -101,14 +101,13 @@ def show_kleine_fishes(polys: List[Polygon], size: int, fishes: List['Image'], f
     except: continue
     r = 5
     # draw.ellipse((dx - r, dy - r, dx + r, dy + r), fill='red')
-  fname = '' + fname
   print(f'Kleine model will be saved as: "{fname}"')
   if fname.endswith('.jpg'):
     im = im.convert('RGB')
   im.save(fname)
   im.show()
 
-def main(params: DiskParams, face_color: Optional[str], fishes: List['Image'], output: str, poincare: bool):
+def main(params: DiskParams, fishes: List['Image'], output: str, poincare: bool):
   disk = PoincareDisk.new(params)
   im = Image.new('RGBA', (params.width, params.height))
   draw = ImageDraw.Draw(im)
@@ -120,7 +119,7 @@ def main(params: DiskParams, face_color: Optional[str], fishes: List['Image'], o
   current_time = start_time
   print('total polys:', amount)
   if not poincare:
-    show_kleine_fishes(disk.polys, min(params.width, params.height), fishes, output, face_color)
+    show_kleine_fishes(disk, min(params.width, params.height), fishes, output)
     return
   for i, (poly, color) in enumerate(zip(disk.polys, disk.colors), 1):
     pts = get_scl(poly, params.width, params.height).points()

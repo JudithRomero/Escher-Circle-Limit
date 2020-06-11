@@ -7,9 +7,8 @@ from main import main
 
 
 class Args:
-  def __init__(self, params: DiskParams, face_color: Optional[str], fishes: List['Image'], output: str, poincare: bool):
+  def __init__(self, params: DiskParams, fishes: List['Image'], output: str, poincare: bool):
     self.params = params
-    self.face_color = face_color
     self.fishes = fishes
     self.output = output
     self.poincare = poincare
@@ -18,7 +17,7 @@ class Args:
   def parse(argv: List[str]) -> Optional['Args']:
     parser = ArgumentParser()
     parser.add_argument('--output', '-o', help='output image filename, i.e "tesselation.png"', required=True)
-    parser.add_argument('--color', help='face color, i.e "#3d3d3d"; if none given random color will be used')
+    parser.add_argument('--color', '-c', nargs='*', help='face colors, i.e "#3d3d3d #f00 black"; if none given random colors will be used')
     parser.add_argument('--poincare', help='draw poincare model instead of Klein', action='store_true')
     parser.add_argument('--layers', type=int, help='algorithm recursion depth, default: 4', default=4)
     parser.add_argument('--size', type=int, help='output image width and height, default: 800px', default=800)
@@ -31,6 +30,9 @@ class Args:
     fst_image = None
     images = []
     allowed_extensions = ['.png', '.jpg', '.bmp']
+    if not parsed.poincare and not parsed.edge:
+      print('Klein model requires edge images')
+      return None
     if not any(map(parsed.output.endswith, allowed_extensions)):
       print('output filename should have one of these extensions:', ', '.join(allowed_extensions))
       return None
@@ -49,8 +51,8 @@ class Args:
       except Exception as e:
         print(f"Can't load image '{edge}': {e}")
         return None
-    params = DiskParams(p, q, parsed.layers, parsed.size)
-    return Args(params, parsed.color, images, parsed.output, parsed.poincare)
+    params = DiskParams(p, q, parsed.layers, parsed.size, parsed.color)
+    return Args(params, images, parsed.output, parsed.poincare)
 
 def load_image(path: str) -> 'Image':
   return Image.open(path).convert('RGBA')
@@ -60,4 +62,4 @@ if __name__ == '__main__':
   if not args:
     exit(1)
   else:
-    main(args.params, args.face_color, args.fishes, args.output, args.poincare)
+    main(args.params, args.fishes, args.output, args.poincare)
