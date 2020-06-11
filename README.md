@@ -9,6 +9,7 @@ type
 'python cli.py —help' to see all the possible arguments in command line
 
 Example of the Poincare disk:
+
 'python cli.py --poincare --layers 2 -o tesselation.png -p 5 -q 6 --size 400'
 
 
