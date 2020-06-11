@@ -10,7 +10,7 @@ type
 
 Example of the Poincare disk:
 
-'python cli.py --poincare --layers 2 -o tesselation.png -p 5 -q 6 --size 400'
+'python cli.py --poincare --layers 2 -o tesselation.png -p 5 -q 6 --size 400 -c white black'
 
 
 ![alt text](./tesselation.png)
